@@ -1,0 +1,96 @@
+<div
+	class="ms"
+	[class.ms--left]="labelPosition === 'left'"
+	[class.ms--invalid]="showRequiredError"
+	[class.ms--editable]="canEdit"
+>
+	<span class="ms__label" *ngIf="showLabel" [id]="labelId" [attr.title]="tooltip || null">
+		{{ label }}<span class="ms__required" *ngIf="required" aria-hidden="true">*</span>
+	</span>
+
+	<div class="ms__body">
+		<div
+			#control
+			class="ms__control"
+			[class.ms__control--open]="isOpen"
+			role="combobox"
+			[attr.aria-labelledby]="showLabel ? labelId : null"
+			[attr.aria-expanded]="isOpen"
+			[attr.aria-controls]="listId"
+			[attr.aria-required]="required || null"
+			[attr.aria-invalid]="showRequiredError || null"
+			[attr.tabindex]="canEdit ? 0 : null"
+			(click)="onControlClick()"
+			(keydown)="onControlKeydown($event)"
+		>
+			<span class="ms__chip" [class.ms__chip--static]="!canEdit" *ngFor="let item of selected; trackBy: trackById">
+				<button type="button" class="ms__chip-text" [title]="item.displayValue" (click)="onChipClick($event, item)">
+					{{ item.displayValue }}
+				</button>
+				<button
+					*ngIf="canEdit"
+					type="button"
+					class="ms__chip-remove"
+					[attr.aria-label]="t.remove + ' ' + item.displayValue"
+					(click)="onRemove($event, item)"
+				>
+					<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false">
+						<path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+					</svg>
+				</button>
+			</span>
+			<span class="ms__placeholder" *ngIf="!selected.length">{{ placeholder }}</span>
+		</div>
+
+		<span class="ms__message" *ngIf="showRequiredError">{{ t.required }}</span>
+		<span class="ms__message" *ngIf="!showRequiredError && message">{{ message }}</span>
+	</div>
+
+	<div class="ms__dropdown" *ngIf="isOpen" [ngStyle]="dropdownStyle">
+		<div class="ms__search">
+			<svg class="ms__search-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+				<circle cx="7" cy="7" r="4.75" fill="none" stroke="currentColor" stroke-width="1.7" />
+				<path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+			</svg>
+			<input
+				#searchInput
+				class="ms__search-input"
+				type="text"
+				autocomplete="off"
+				[placeholder]="t.search"
+				[attr.aria-label]="t.search"
+				[attr.aria-controls]="listId"
+				(input)="onSearch(searchInput.value)"
+				(keydown)="onSearchKeydown($event)"
+			/>
+			<button
+				*ngIf="enableAddRecord"
+				type="button"
+				class="ms__add"
+				[title]="t.addRecord"
+				[attr.aria-label]="t.addRecord"
+				(click)="onAddRecord()"
+			>
+				<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+					<path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+				</svg>
+			</button>
+		</div>
+
+		<ul #list class="ms__list" role="listbox" aria-multiselectable="true" [id]="listId" (scroll)="onListScroll()">
+			<li
+				*ngFor="let option of options; let i = index; trackBy: trackById"
+				class="ms__option"
+				role="option"
+				aria-selected="false"
+				[class.ms__option--active]="i === activeIndex"
+				(mouseenter)="activeIndex = i"
+				(click)="onSelect(option)"
+			>
+				{{ option.displayValue }}
+			</li>
+			<li class="ms__hint" *ngIf="optionsLoading">{{ t.loading }}</li>
+			<li class="ms__hint" *ngIf="!optionsLoading && !options.length">{{ t.empty }}</li>
+		</ul>
+	</div>
+</div>

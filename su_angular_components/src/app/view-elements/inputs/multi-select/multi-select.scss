@@ -1,0 +1,269 @@
+/* Mimics crt.MultiSelect: grey caption, chips on a dotted underline,
+   and a dropdown card with a search row and a plain list. */
+:host {
+	display: block;
+	width: 100%;
+
+	--su-field-label-color: #757575;
+	--su-field-text-color: #181818;
+	--su-field-placeholder-color: #8f8f8f;
+	--su-field-underline-color: #d6d6d6;
+	--su-field-underline-hover-color: #9e9e9e;
+	--su-field-focus-color: #0058ef;
+	--su-field-hover-bg: #f5f5f5;
+	--su-field-error-color: #ff4013;
+	--su-chip-bg: #e9edf3;
+	--su-chip-hover-bg: #dde3ec;
+	--su-chip-text-color: #22324d;
+	--su-dropdown-bg: #ffffff;
+	--su-dropdown-divider: #e6e6e6;
+}
+
+:host(.su-hidden) {
+	display: none;
+}
+
+.ms {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding-bottom: 4px;
+	font-family: inherit;
+}
+
+.ms--left {
+	flex-direction: row;
+	align-items: flex-start;
+	gap: 8px;
+}
+
+.ms__label {
+	font-size: 13px;
+	line-height: 16px;
+	font-weight: 500;
+	color: var(--su-field-label-color);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.ms--left .ms__label {
+	flex: 0 0 40%;
+	padding-top: 4px;
+}
+
+.ms__required {
+	margin-left: 2px;
+	color: var(--su-field-focus-color);
+}
+
+.ms__body {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.ms__control {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px;
+	min-height: 24px;
+	padding: 2px 0;
+	box-sizing: border-box;
+	border-bottom: 1px dotted var(--su-field-underline-color);
+	transition: border-color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.ms--editable .ms__control {
+	cursor: pointer;
+}
+
+.ms--editable .ms__control:hover:not(.ms__control--open) {
+	border-bottom-style: solid;
+	border-bottom-color: var(--su-field-underline-hover-color);
+	background-color: var(--su-field-hover-bg);
+}
+
+.ms__control:focus-visible {
+	outline: none;
+	border-bottom: 1px solid var(--su-field-focus-color);
+}
+
+.ms__control--open {
+	border-bottom: 1px solid var(--su-field-focus-color);
+	box-shadow: 0 1px 0 0 var(--su-field-focus-color);
+}
+
+.ms--invalid .ms__control {
+	border-bottom: 1px solid var(--su-field-error-color);
+}
+
+.ms__chip {
+	display: inline-flex;
+	align-items: center;
+	max-width: 100%;
+	height: 20px;
+	padding: 0 4px 0 8px;
+	box-sizing: border-box;
+	border-radius: 10px;
+	background-color: var(--su-chip-bg);
+	color: var(--su-chip-text-color);
+}
+
+.ms__chip--static {
+	padding-right: 8px;
+}
+
+.ms__chip:hover {
+	background-color: var(--su-chip-hover-bg);
+}
+
+.ms__chip-text,
+.ms__chip-remove,
+.ms__add {
+	padding: 0;
+	border: none;
+	background: none;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+}
+
+.ms__chip-text {
+	overflow: hidden;
+	font-size: 13px;
+	line-height: 20px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+/* The chip opens the record, so it reads as a link on hover. */
+.ms__chip-text:hover,
+.ms__chip-text:focus-visible {
+	color: var(--su-field-focus-color);
+	text-decoration: underline;
+	outline: none;
+}
+
+.ms__chip-remove {
+	display: inline-flex;
+	flex: 0 0 auto;
+	margin-left: 2px;
+	padding: 2px;
+	border-radius: 50%;
+}
+
+.ms__chip-remove:hover,
+.ms__chip-remove:focus-visible {
+	background-color: rgba(0, 0, 0, 0.08);
+	outline: none;
+}
+
+.ms__placeholder {
+	font-size: 14px;
+	line-height: 20px;
+	color: var(--su-field-placeholder-color);
+}
+
+.ms__message {
+	font-size: 12px;
+	line-height: 16px;
+	color: var(--su-field-error-color);
+}
+
+.ms__dropdown {
+	position: fixed;
+	z-index: 1000;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	border-radius: 4px;
+	background-color: var(--su-dropdown-bg);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+	overflow: hidden;
+	cursor: default;
+}
+
+.ms__search {
+	display: flex;
+	flex: 0 0 auto;
+	align-items: center;
+	gap: 8px;
+	margin: 0 12px;
+	padding: 12px 0;
+	border-bottom: 1px solid var(--su-dropdown-divider);
+	color: var(--su-field-text-color);
+}
+
+.ms__search-icon {
+	flex: 0 0 auto;
+}
+
+.ms__search-input {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 0;
+	border: none;
+	outline: none;
+	background: transparent;
+	font-family: inherit;
+	font-size: 14px;
+	line-height: 20px;
+	color: var(--su-field-text-color);
+}
+
+.ms__search-input::placeholder {
+	color: var(--su-field-placeholder-color);
+}
+
+.ms__add {
+	display: inline-flex;
+	padding: 2px;
+	border-radius: 4px;
+}
+
+.ms__add:hover,
+.ms__add:focus-visible {
+	background-color: var(--su-field-hover-bg);
+	outline: none;
+}
+
+.ms__list {
+	flex: 1 1 auto;
+	margin: 0;
+	padding: 4px 0;
+	overflow-y: auto;
+	list-style: none;
+}
+
+.ms__option,
+.ms__hint {
+	padding: 10px 20px;
+	font-size: 14px;
+	line-height: 20px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.ms__option {
+	color: var(--su-field-text-color);
+	cursor: pointer;
+}
+
+.ms__option--active {
+	background-color: var(--su-field-hover-bg);
+}
+
+.ms__hint {
+	color: var(--su-field-placeholder-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ms__control {
+		transition: none;
+	}
+}

@@ -1,0 +1,40 @@
+<div class="field" [class.field--invalid]="isInvalid" [class.field--disabled]="disabled">
+	<label class="field__label" *ngIf="label" [attr.for]="inputId">{{ label }}</label>
+
+	<div class="field__control" [class.field__control--locked]="isReadonly">
+		<input
+			#input
+			class="field__input"
+			type="text"
+			[id]="inputId"
+			[value]="value"
+			[readOnly]="isReadonly"
+			[disabled]="disabled"
+			[attr.placeholder]="placeholder || null"
+			[attr.maxlength]="maxLength || null"
+			[attr.aria-invalid]="isInvalid || null"
+			(input)="onInput(input.value)"
+		/>
+
+		<svg
+			*ngIf="isReadonly"
+			class="field__icon"
+			viewBox="0 0 16 16"
+			width="16"
+			height="16"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<path
+				d="M4.5 7V5a3.5 3.5 0 1 1 7 0v2"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+			/>
+			<rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor" />
+		</svg>
+	</div>
+
+	<span class="field__message" *ngIf="isInvalid">{{ validationMessage }}</span>
+</div>
