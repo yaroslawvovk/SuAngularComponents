@@ -14,9 +14,19 @@ const VIEW_ELEMENTS: Array<[string, Type<unknown>]> = [
   ['su-multi-select', MultiSelectComponent]
 ];
 
+const VIEW_ELEMENT_TYPES = VIEW_ELEMENTS.map(([, component]) => component);
+
+/* The Interface Designer builds handler chains from its own package topology, which does not
+   contain this package, so any global handler of this module breaks every designer page.
+   The designer only needs the view elements, so it gets this handler-free definition. */
+@CrtModule({
+  viewElements: VIEW_ELEMENT_TYPES
+})
+class DesignerCrtModule {}
+
 @CrtModule({
   /* Specify the view elements of the module. */
-  viewElements: [TextInputComponent, MultiSelectComponent],
+  viewElements: VIEW_ELEMENT_TYPES,
   /* Global handlers that let view elements take part in page lifecycle and save. */
   requestHandlers: [PageContextInitHandler, PageContextDestroyHandler, SaveRecordHandler]
 })
@@ -37,8 +47,11 @@ export class AppModule implements DoBootstrap {
       customElements.define(tagName, createCustomElement(component, { injector: this._injector }));
     }
 
-    /* Bootstrap CrtModule definitions. */
-    bootstrapCrtModule('su_angular_components', AppModule, {
+    /* Bootstrap CrtModule definitions. The designer opens in its own tab,
+       so the module is bootstrapped there separately. */
+    /* Designer routes: #/PageDesigner/..., #/InterfaceDesigner/... */
+    const isDesigner = /^#\/\w*Designer\b/.test(window.location.hash);
+    bootstrapCrtModule('su_angular_components', isDesigner ? DesignerCrtModule : AppModule, {
       resolveDependency: (token) => this._injector.get(<ProviderToken<unknown>>token)
     });
   }
